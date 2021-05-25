@@ -43,7 +43,7 @@ io = start()
 text = io.clean().decode()
 log.info(text)
 index = text.find("0x")
-ret2winAddress = text[index:]
+pivotAddress = text[index:]
 payloadROPchain = ""
 io.sendline(payloadROPchain)
 
